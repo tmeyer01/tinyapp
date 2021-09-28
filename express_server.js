@@ -2,10 +2,11 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
-const bodyParser = require("body-parser");
+//const bodyParser = require("body-parser");
 const { render } = require("ejs");
 const { response } = require("express");
-app.use(bodyParser.urlencoded({extended: true}));
+//app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 
 const urlDatabase = {
@@ -43,6 +44,14 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = longURL;
   res.redirect('/urls/' + shortURL);
 });
+
+
+ app.post("/urls/:shortURL/delete", (req,res) => {
+
+  const urlToDelete = req.params.shortURL
+  delete urlDatabase[urlToDelete]
+  res.redirect('/urls/');
+ })
   
 
 app.get("/", (req, res) => {
