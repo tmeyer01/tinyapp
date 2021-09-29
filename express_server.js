@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
@@ -7,6 +8,7 @@ app.set('view engine', 'ejs');
 //const { response } = require("express");
 //app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 
 
 const urlDatabase = {
@@ -15,18 +17,25 @@ const urlDatabase = {
 };
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {username: req.cookies["username"]}
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
+
+//setting up templateVar for login
+// app.get("/login", (req, res) => {
+//   //const templateVars = { login: urlDatabase };
+//   //res.render("urls_index", templateVars);
+// });
 
 app.get("/urls/:shortURL", (req, res) =>{
   //console.log(req.params);
   //console.log("=======> ", req)
-  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
   res.render("urls_show", templateVars);
 });
 
@@ -63,6 +72,40 @@ app.post("/urls/:shortURL", (req, res) => {
 
   res.redirect(`/urls/`);
 });
+
+// Endpoint to handle a POST to /login
+app.post("/login", (req, res) => {
+  
+  const userName = req.body.username;
+  
+  res.cookie('username', userName);
+  
+  //console.log("HELLLLLLLO");
+  
+  res.redirect(`/urls/`);
+});
+
+// Endpoint to handle a POST to /login
+app.post("/logout", (req, res) => {
+  
+  // const userName = req.body.username;
+  
+  // res.cookie('username', userName);
+  
+  // //console.log("HELLLLLLLO");
+  
+  // res.redirect(`/urls/`);
+
+  res.clearCookie("username", req.body.username);
+  res.redirect(`/urls`);
+
+
+});
+
+
+
+
+
   
 
 app.get("/", (req, res) => {
