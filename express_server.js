@@ -3,8 +3,8 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 //const bodyParser = require("body-parser");
-const { render } = require("ejs");
-const { response } = require("express");
+//const { render } = require("ejs");
+//const { response } = require("express");
 //app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,12 +46,23 @@ app.post("/urls", (req, res) => {
 });
 
 
- app.post("/urls/:shortURL/delete", (req,res) => {
+// Delete urls
+app.post("/urls/:shortURL/delete", (req,res) => {
 
-  const urlToDelete = req.params.shortURL
-  delete urlDatabase[urlToDelete]
+  const urlToDelete = req.params.shortURL;
+  delete urlDatabase[urlToDelete];
   res.redirect('/urls/');
- })
+});
+
+//Update URLS
+app.post("/urls/:shortURL", (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  const newURL = req.body.longURL;
+  urlDatabase[shortURL] = newURL;
+
+  res.redirect(`/urls/`);
+});
   
 
 app.get("/", (req, res) => {
