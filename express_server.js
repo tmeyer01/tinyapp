@@ -58,48 +58,26 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 //Update URLS
 app.post("/urls/:shortURL", (req, res) => {
-
   const shortURL = req.params.shortURL;
   const newURL = req.body.longURL;
   urlDatabase[shortURL] = newURL;
-
   res.redirect(`/urls/`);
 });
 
 // Endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
-  
   const userName = req.body.username;
-  
   res.cookie('username', userName);
-  
-  //console.log("HELLLLLLLO");
-  
   res.redirect(`/urls/`);
 });
 
 // Endpoint to handle a POST to /login
 app.post("/logout", (req, res) => {
-  
-  // const userName = req.body.username;
-  
-  // res.cookie('username', userName);
-  
-  // //console.log("HELLLLLLLO");
-  
-  // res.redirect(`/urls/`);
-
   res.clearCookie("username", req.body.username);
   res.redirect(`/urls`);
-
-
 });
 
 
-
-
-
-  
 
 app.get("/", (req, res) => {
   res.send("Hello!");
