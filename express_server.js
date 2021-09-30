@@ -16,19 +16,52 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "a12": {
+    id: "a12", 
+    email: "a@123.com", 
+    password: "abc"
+  },
+ "a123": {
+    id: "a123", 
+    email: "b@123.com", 
+    password: "abc"
+  }
+}
+
+
+const searchUsersByEmail = (email) => {
+  for (const userId in users){
+    const user = users[userId];
+    if (user.email === email){
+      return user
+    }
+  }
+  return null;
+}
+
+
+
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const user = users[req.cookies["user_id"]]
+  const templateVars = {email: user.email};;
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const user = users[req.cookies["user_id"]]
+  let templateVars = { urls: urlDatabase, email: undefined };
+  if(user){
+     templateVars = { urls: urlDatabase, email: user.email };
+  }
+
   res.render("urls_index", templateVars);
 });
 
 
 app.get("/urls/:shortURL", (req, res) =>{
-  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const user = users[req.cookies["user_id"]]
+  const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], email: user.email};
   res.render("urls_show", templateVars);
 });
 
@@ -66,22 +99,65 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // Endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
-  const userName = req.body.username;
+  const email = req.body["email"];
+  const password = req.body["password"]
+  
+  
+  
+  
   res.cookie('username', userName);
   res.redirect(`/urls/`);
 });
 
 // Endpoint to handle a POST to /login
 app.post("/logout", (req, res) => {
-  res.clearCookie("username", req.body.username);
+  const user = users[req.cookies["user_id"]]
+  //res.clearCookie("email", users.email)
+  res.clearCookie("user_id");
   res.redirect(`/urls`);
 });
 
 
+//Render register.ejs template
 app.get("/register", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const user = users[req.cookies["user_id"]]
+  const templateVars = {email: users.email}
+  //const templateVars = {username: req.cookies["username"]};
   
   res.render(`register`, templateVars);
+});
+
+//Registration handler
+app.post("/register", (req, res) => {
+  
+  const email = req.body["email"];
+  const password = req.body["password"]
+  //console.log(req.body)
+ 
+  //making sure email or password is not blank
+  if( !email || !password){
+    return res.status(400).send("Email or password can not be blank")
+  }
+  //check to see if user already exists 
+  const user = searchUsersByEmail(email);
+
+  if(user){
+    return res.status(400).send("A user has already registed with that email")
+  }
+
+  const id = generateRandomString();
+
+  users[id] = {
+    id: id,
+    email: email,
+    password: password,
+  }
+
+  console.log(users)
+  //sets cookie with loging
+  //res.cookie('username', email);
+  res.cookie('user_id', id )
+  res.redirect(`/urls`);
 });
 
 
@@ -115,3 +191,4 @@ const generateRandomString = () => {
   }
   return sixRanLetters;
 };
+
