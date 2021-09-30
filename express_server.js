@@ -16,29 +16,29 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = { 
+const users = {
   "a12": {
-    id: "a12", 
-    email: "a@123.com", 
+    id: "a12",
+    email: "a@123.com",
     password: "abc"
   },
- "a123": {
-    id: "a123", 
-    email: "b@123.com", 
+  "a123": {
+    id: "a123",
+    email: "b@123.com",
     password: "abc"
   }
-}
+};
 
 
 const searchUsersByEmail = (email) => {
-  for (const userId in users){
+  for (const userId in users) {
     const user = users[userId];
-    if (user.email === email){
-      return user
+    if (user.email === email) {
+      return user;
     }
   }
   return null;
-}
+};
 
 // const searchUsersByPassword = (password) => {
 //   for (const userPass in Password)
@@ -47,16 +47,16 @@ const searchUsersByEmail = (email) => {
 
 
 app.get("/urls/new", (req, res) => {
-  const user = users[req.cookies["user_id"]]
-  const templateVars = {email: user.email};;
+  const user = users[req.cookies["user_id"]];
+  const templateVars = {email: user.email};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const user = users[req.cookies["user_id"]]
+  const user = users[req.cookies["user_id"]];
   let templateVars = { urls: urlDatabase, email: undefined };
-  if(user){
-     templateVars = { urls: urlDatabase, email: user.email };
+  if (user) {
+    templateVars = { urls: urlDatabase, email: user.email };
   }
 
   res.render("urls_index", templateVars);
@@ -64,7 +64,7 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/:shortURL", (req, res) =>{
-  const user = users[req.cookies["user_id"]]
+  const user = users[req.cookies["user_id"]];
   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], email: user.email};
   res.render("urls_show", templateVars);
 });
@@ -105,33 +105,33 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   
   const email = req.body["email"];
-  const password = req.body["password"]
+  const password = req.body["password"];
 
-  const user = searchUsersByEmail(email)
+  const user = searchUsersByEmail(email);
   
 
-  if(!email || !password){
+  if (!email || !password) {
     return res.status(403).send("Email and or password can not be blank");
   }
 
-  if(!user){
-    return res.status(403).send("No user with that email exists")
+  if (!user) {
+    return res.status(403).send("No user with that email exists");
   }
 
-  if(user && user.password === password){
-    res.cookie('user_id', user.id)
-    res.redirect(`/urls/`)
+  if (user && user.password === password) {
+    res.cookie('user_id', user.id);
+    res.redirect(`/urls/`);
   }
 
 
-  return res.status(403).send("User found but incorrect password entered")
-  //res.cookie('username', userName);
-  //res.redirect(`/urls/`);
+  return res.status(403).send("User found but incorrect password entered");
+
+
 });
 
 // Endpoint to handle a POST to /login
 app.post("/logout", (req, res) => {
-  const user = users[req.cookies["user_id"]]
+  //const user = users[req.cookies["user_id"]];//////////////////////////
   //res.clearCookie("email", users.email)
   res.clearCookie("user_id");
   res.redirect(`/urls`);
@@ -139,10 +139,10 @@ app.post("/logout", (req, res) => {
 
 //Render register.ejs template
 app.get("/login", (req, res) => {
-  //const user = users[req.cookies["user_id"]]
-  const templateVars = {email: users.email}
   
-  console.log("Login ")
+  const templateVars = {email: users.email};
+  
+  console.log("Login ");
   
   res.render('login', templateVars);
 });
@@ -155,10 +155,8 @@ app.get("/login", (req, res) => {
 
 //Render register.ejs template
 app.get("/register", (req, res) => {
-  const user = users[req.cookies["user_id"]]
-  const templateVars = {email: users.email}
-  //const templateVars = {username: req.cookies["username"]};
-  
+  //const user = users[req.cookies["user_id"]];//////////////////////
+  const templateVars = {email: users.email};
   res.render(`register`, templateVars);
 });
 
@@ -166,18 +164,18 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   
   const email = req.body["email"];
-  const password = req.body["password"]
+  const password = req.body["password"];
   //console.log(req.body)
  
   //making sure email or password is not blank
-  if( !email || !password){
-    return res.status(400).send("Email or password can not be blank")
+  if (!email || !password) {
+    return res.status(400).send("Email or password can not be blank");
   }
-  //check to see if user already exists 
+  //check to see if user already exists
   const user = searchUsersByEmail(email);
 
-  if(user){
-    return res.status(400).send("A user has already registed with that email")
+  if (user) {
+    return res.status(400).send("A user has already registed with that email");
   }
 
   const id = generateRandomString();
@@ -186,12 +184,11 @@ app.post("/register", (req, res) => {
     id: id,
     email: email,
     password: password,
-  }
+  };
 
-  console.log(users)
+  //console.log(users)
   //sets cookie with loging
-  //res.cookie('username', email);
-  res.cookie('user_id', id )
+  res.cookie('user_id', id);
   res.redirect(`/urls`);
 });
 
