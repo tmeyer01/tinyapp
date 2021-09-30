@@ -101,10 +101,7 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body["email"];
   const password = req.body["password"]
-  
-  
-  
-  
+
   res.cookie('username', userName);
   res.redirect(`/urls/`);
 });
@@ -116,6 +113,21 @@ app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect(`/urls`);
 });
+
+//Render register.ejs template
+app.get("/login", (req, res) => {
+  //const user = users[req.cookies["user_id"]]
+  const templateVars = {email: users.email}
+  
+  console.log("Login ")
+  
+  res.render('login', templateVars);
+});
+
+
+
+
+
 
 
 //Render register.ejs template
