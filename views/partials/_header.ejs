@@ -13,15 +13,15 @@
       <!-- </span>  -->
     </div>
     <form method="POST" action="/login" class="form-inline my-2 my-lg-0">
-      <%if (username) { %>
-        <label>Logged in as: <%= username %></label>
-        <% } else if (!username) { %>
+      <%if (email) { %>
+        <label>Logged in as: <%= email %></label>
+        <% } else if (!email) { %>
         <input name="username" placeholder="Username" />
         <button class="btn btn-outline-dark" type="submit">Login</button>
         <%} %>  
     </form>
     <form method="POST" action="/logout" class="form-inline my-2 my-lg-0">
-        <%if (username) { %>
+        <%if (email) { %>
         <button class="btn btn-outline-dark" type="submit">Logout</button>
         <% } %>  
     </form>
