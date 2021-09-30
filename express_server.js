@@ -40,6 +40,10 @@ const searchUsersByEmail = (email) => {
   return null;
 }
 
+// const searchUsersByPassword = (password) => {
+//   for (const userPass in Password)
+// }
+
 
 
 app.get("/urls/new", (req, res) => {
@@ -99,11 +103,30 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // Endpoint to handle a POST to /login
 app.post("/login", (req, res) => {
+  
   const email = req.body["email"];
   const password = req.body["password"]
 
-  res.cookie('username', userName);
-  res.redirect(`/urls/`);
+  const user = searchUsersByEmail(email)
+  
+
+  if(!email || !password){
+    return res.status(403).send("Email and or password can not be blank");
+  }
+
+  if(!user){
+    return res.status(403).send("No user with that email exists")
+  }
+
+  if(user && user.password === password){
+    res.cookie('user_id', user.id)
+    res.redirect(`/urls/`)
+  }
+
+
+  return res.status(403).send("User found but incorrect password entered")
+  //res.cookie('username', userName);
+  //res.redirect(`/urls/`);
 });
 
 // Endpoint to handle a POST to /login
