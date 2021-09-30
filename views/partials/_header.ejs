@@ -14,23 +14,25 @@
     </div>
     <!-- <form method="POST" action="/login" class="form-inline my-2 my-lg-0">
       <%if (email) { %>
-        <label>Logged in as: <%= email %></label>
         <% } else if (!email) { %>
-        <input name="username" placeholder="Username" />
-        <button class="btn btn-outline-dark" type="submit">Login</button>
-        <%} %>  
-    </form> -->
+          <input name="username" placeholder="Username" />
+          <button class="btn btn-outline-dark" type="submit">Login</button>
+          <%} %>  
+        </form> -->
     <%if (email) { %>
+    <label>Logged in as: <%= email %></label>
     <form method="POST" action="/logout" class="form-inline my-2 my-lg-0">
         <button class="btn btn-outline-dark" type="submit">Logout</button>
       </form>
       <% } else {%>  
       <form method="GET" action="/login">
-        <button action="submit" class="btn btn-outline-primary">Login</button>
+       
+        <button action="submit" class="btn btn-outline-primary">Login</button> -->
     </form>
-    <form method="GET" action="/register">
-      <button action="submit" class="btn btn-outline-primary">Register</button>
-    </form>
+     <form method="GET" action="/register">
+     
+      <button action="submit" class="btn btn-outline-primary">Register</button> -->
+    </form> 
     <% }%> 
   </nav>
 
