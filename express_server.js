@@ -94,8 +94,9 @@ app.get("/urls/:shortURL", (req, res) =>{
 
 ////////////////////////////////////Redirects you to acutal website
 app.get("/u/:shortURL", (req, res) => {
+  console.log('short ',req.params.shortURL);
   const longURL = urlDatabase[req.params.shortURL]['longURL'];
-  return res.redirect(longURL);
+  return res.redirect(`https://${longURL}`);
 });
 
 //////////////////////////////////////////////////adding of url
@@ -120,7 +121,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   return res.redirect('/urls/');
 });
 
-////////////////////////////////////////////////////////////////Update URLS
+//////////////////////////////////////////////////////////Update URLS
 app.post("/urls/:shortURL", (req, res) => {
  
   const shortURL = req.params.shortURL;
