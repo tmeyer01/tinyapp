@@ -6,7 +6,7 @@ const searchUsersByEmail = (email, database) => {
       return user;
     }
   }
-  return null;
+  return undefined;
 };
 
 
