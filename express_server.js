@@ -1,3 +1,4 @@
+const { searchUsersByEmail } = require("./helper");
 const express = require("express");
 const cookieSession = require("cookie-session");
 
@@ -42,16 +43,6 @@ const searchDataBaseByUser = (userID) => {
     }
   }
   return newUrlDatabase;
-};
-   
-const searchUsersByEmail = (email, database) => {
-  for (const userId in database) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
 };
 
 const generateRandomString = () => {
@@ -249,3 +240,6 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+module.exports = { users, urlDatabase };
