@@ -44,14 +44,25 @@ const searchDataBaseByUser = (userID) => {
   return newUrlDatabase;
 };
    
-const searchUsersByEmail = (email) => {
-  for (const userId in users) {
+const searchUsersByEmail = (email, database) => {
+  for (const userId in database) {
     const user = users[userId];
     if (user.email === email) {
       return user;
     }
   }
   return null;
+};
+
+const generateRandomString = () => {
+  let sixRanLetters = '';
+  const letters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSdTtUuVvWwXxYyZz';
+  const letterNum = letters.length;
+  
+  for (let i = 0; i < 6; i++) {
+    sixRanLetters += letters.charAt(Math.floor(Math.random() * letterNum));
+  }
+  return sixRanLetters;
 };
 
 /////////////////////////////////////////////When you goto url_new
@@ -70,15 +81,16 @@ app.get("/urls/new", (req, res) => {
 ////////////////////////////////////////////When you goto URL index
 app.get("/urls", (req, res) => {
   const user = users[req.session["user_id"]]
-  let templateVars;
-  
+ 
   if (user) {
     let userData = searchDataBaseByUser(user.id);
-    templateVars = { urls: userData, email: user.email };
+    const templateVars = { urls: userData, email: user.email };
+    res.render("urls_index", templateVars);
   } else {
-    const templateVars = {urls:{}, email:undefined};
+    const templateVars = {urls:{}, email:null};
+    res.render("urls_index", templateVars);
   }
-  res.render("urls_index", templateVars);
+  
 });
     
 ////////////////////////////////////////////When you goto SHOW URLS
@@ -144,7 +156,7 @@ app.post("/login", (req, res) => {
   if (!email || !password) {
     return res.status(403).json("Email and or password can not be blank");
   }
-  const user = searchUsersByEmail(email);
+  const user = searchUsersByEmail(email, users);
   
   if (!user) {
     return res.status(403).json("No user with that email exists");
@@ -204,7 +216,7 @@ app.post("/register", (req, res) => {
     return res.status(400).json("Email or password can not be blank");
   }
   //check to see if user already exists
-  const user = searchUsersByEmail(email);
+  const user = searchUsersByEmail(email, users);
   
   if (user) {
     return res.status(400).json("A user has already registed with that email");
@@ -237,14 +249,3 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-const generateRandomString = () => {
-  let sixRanLetters = '';
-  const letters = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSdTtUuVvWwXxYyZz';
-  const letterNum = letters.length;
-  
-  for (let i = 0; i < 6; i++) {
-    sixRanLetters += letters.charAt(Math.floor(Math.random() * letterNum));
-  }
-  return sixRanLetters;
-};
