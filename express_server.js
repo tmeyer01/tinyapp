@@ -15,7 +15,6 @@ app.use(cookieSession({
   keys: ['my secret key', 'yet another secret key']
 }));
 
-
 const urlDatabase = {
   "b2xVn2": {longURL:"http://www.lighthouselabs.ca", userID: "a12"},
   "9sm5xK": {longURL:"http://www.google.com", userID: "a12"}
@@ -34,7 +33,7 @@ const users = {
   }
 };
 
-//////////////////////////////////////////////// Functions 
+//////////////////////////////////////////////// Functions
 const searchDataBaseByUser = (userID) => {
   const newUrlDatabase = {};
   for (const shortURL in urlDatabase) {
@@ -58,8 +57,7 @@ const generateRandomString = () => {
 
 /////////////////////////////////////////////When you goto url_new
 app.get("/urls/new", (req, res) => {
-  
-  const user = users[req.session["user_id"]]
+  const user = users[req.session["user_id"]];
   
   if (!user) {
     return res.redirect('/login');
@@ -71,8 +69,8 @@ app.get("/urls/new", (req, res) => {
 
 ////////////////////////////////////////////When you goto URL index
 app.get("/urls", (req, res) => {
-  const user = users[req.session["user_id"]]
- 
+  const user = users[req.session["user_id"]];
+
   if (user) {
     let userData = searchDataBaseByUser(user.id);
     const templateVars = { urls: userData, email: user.email };
@@ -81,19 +79,17 @@ app.get("/urls", (req, res) => {
     const templateVars = {urls:{}, email:null};
     res.render("urls_index", templateVars);
   }
-  
 });
     
 ////////////////////////////////////////////When you goto SHOW URLS
 app.get("/urls/:shortURL", (req, res) =>{
-  const user = users[req.session["user_id"]]
+  const user = users[req.session["user_id"]];
   if (!user) {
-   return res.redirect('/login');
- } else {
-  // console.log("userdata base ",urlDatabase);
-   const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'], email: user.email};
+    return res.redirect('/login');
+  } else {
+    const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'], email: user.email};
    res.render("urls_show", templateVars);
- }
+  }
 });
 
 ////////////////////////////////////Redirects you to acutal website
@@ -109,7 +105,6 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   
   urlDatabase[shortURL] = {longURL: longURL, userID: user};
- // console.log(urlDatabase[shortURL]);
   return res.redirect('/urls/' + shortURL);
 });
 
@@ -131,7 +126,7 @@ app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const newURL = req.body.longURL;
 
-  if (req.session['user_id'] !== urlDatabase[shortURL].userID) {  
+  if (req.session['user_id'] !== urlDatabase[shortURL].userID) {
     return res.status(401).json('Bad Request');
   }
 
@@ -153,7 +148,7 @@ app.post("/login", (req, res) => {
     return res.status(403).json("No user with that email exists");
   }
   
-   const passwordMatched = bcrypt.compareSync(password, user.password);
+  const passwordMatched = bcrypt.compareSync(password, user.password);
 
   if (user && passwordMatched) {
     req.session.user_id = user.id;
@@ -175,7 +170,7 @@ app.get("/login", (req, res) => {
   //const user = users[req.cookies["user_id"]];
   const user = users[req.session["user_id"]];
   const templateVars = {email: users.email};
- // console.log(user);
+ 
   if (user) {
     return res.redirect(`/urls`);
   } else {
@@ -185,8 +180,7 @@ app.get("/login", (req, res) => {
 
 ////////////////////////////////////////////Render register.ejs template
 app.get("/register", (req, res) => {
-  
-  //const user = users[req.cookies["user_id"]];
+
   const user = users[req.session["user_id"]];
   const templateVars = {email: users.email};
   

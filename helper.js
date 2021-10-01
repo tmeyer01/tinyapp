@@ -1,4 +1,3 @@
-
 const searchUsersByEmail = (email, database) => {
   for (const userId in database) {
     const user = database[userId];
