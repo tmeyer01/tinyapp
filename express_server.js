@@ -94,7 +94,7 @@ app.get("/urls/:shortURL", (req, res) =>{
 
 ////////////////////////////////////Redirects you to acutal website
 app.get("/u/:shortURL", (req, res) => {
-  console.log('short ',req.params.shortURL);
+  
   const longURL = urlDatabase[req.params.shortURL]['longURL'];
   return res.redirect(`https://${longURL}`);
 });
@@ -221,7 +221,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  return res.json("Hello!");
+  return res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
