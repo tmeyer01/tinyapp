@@ -71,6 +71,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
   const user = users[req.session["user_id"]];
 
+  if (!user) {
+    //res.status(400).json('Bad Request');
+    return res.redirect('/login');
+  }
+
   if (user) {
     let userData = searchDataBaseByUser(user.id);
     const templateVars = { urls: userData, email: user.email };
@@ -86,7 +91,10 @@ app.get("/urls/:shortURL", (req, res) =>{
   const user = users[req.session["user_id"]];
   if (!user) {
     return res.redirect('/login');
-  } else {
+  } else if(!urlDatabase[req.params.shortURL]) {
+    return res.status(400).json('Bad Request');
+  } else {  
+    console.log(urlDatabase)
     const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'], email: user.email};
    res.render("urls_show", templateVars);
   }
