@@ -91,12 +91,11 @@ app.get("/urls/:shortURL", (req, res) =>{
   const user = users[req.session["user_id"]];
   if (!user) {
     return res.redirect('/login');
-  } else if(!urlDatabase[req.params.shortURL]) {
+  } else if (!urlDatabase[req.params.shortURL]) {
     return res.status(400).json('Bad Request');
-  } else {  
-    console.log(urlDatabase)
+  } else {
     const templateVars = {shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]['longURL'], email: user.email};
-   res.render("urls_show", templateVars);
+    res.render("urls_show", templateVars);
   }
 });
 
@@ -115,6 +114,32 @@ app.post("/urls", (req, res) => {
   
   urlDatabase[shortURL] = {longURL: longURL, userID: user};
   return res.redirect('/urls/' + shortURL);
+});
+
+///////////////////////////////////////////////////Render login.ejs template
+app.get("/login", (req, res) => {
+  //const user = users[req.cookies["user_id"]];
+  const user = users[req.session["user_id"]];
+  const templateVars = {email: users.email};
+ 
+  if (user) {
+    return res.redirect(`/urls`);
+  } else {
+    res.render('login', templateVars);
+  }
+});
+
+////////////////////////////////////////////Render register.ejs template
+app.get("/register", (req, res) => {
+
+  const user = users[req.session["user_id"]];
+  const templateVars = {email: users.email};
+  
+  if (user) {
+    return res.redirect(`/urls`);
+  } else {
+    res.render(`register`, templateVars);
+  }
 });
 
 ////////////////////////////////////////////////////// Delete urls
@@ -172,32 +197,6 @@ app.post("/logout", (req, res) => {
   req.session.user_id = null;
   //res.session = null;
   return res.redirect(`/login`);
-});
-
-///////////////////////////////////////////////////Render login.ejs template
-app.get("/login", (req, res) => {
-  //const user = users[req.cookies["user_id"]];
-  const user = users[req.session["user_id"]];
-  const templateVars = {email: users.email};
- 
-  if (user) {
-    return res.redirect(`/urls`);
-  } else {
-    res.render('login', templateVars);
-  }
-});
-
-////////////////////////////////////////////Render register.ejs template
-app.get("/register", (req, res) => {
-
-  const user = users[req.session["user_id"]];
-  const templateVars = {email: users.email};
-  
-  if (user) {
-    return res.redirect(`/urls`);
-  } else {
-    res.render(`register`, templateVars);
-  }
 });
   
 //////////////////////////////////////////////////Registration handler
