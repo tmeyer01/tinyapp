@@ -9,4 +9,5 @@ const searchUsersByEmail = (email, database) => {
 };
 
 
+
 module.exports = { searchUsersByEmail };
