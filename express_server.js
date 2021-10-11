@@ -1,4 +1,4 @@
-const { searchUsersByEmail} = require("./helper");
+const { searchUsersByEmail, searchDataBaseByUser, generateRandomString} = require("./helper");
 
 const express = require("express");
 const cookieSession = require("cookie-session");
@@ -20,7 +20,7 @@ app.use(
 
 const urlDatabase = {
   b2xVn2: { longURL: "http://www.lighthouselabs.ca", userID: "a12" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "a12" },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "a123" },
 };
 
 const users = {
@@ -34,28 +34,6 @@ const users = {
     email: "b@123.com",
     password: "$2a$10$dBTxeK9j.2dntmrf/2kfeepyi2lgqeGcFcqzPVWP3Cj4txeBA.UC.",
   },
-};
-
-//////////////////////////////////////////////// Functions
-const searchDataBaseByUser = (userID) => {
-  const newUrlDatabase = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL]["userID"] === userID) {
-      newUrlDatabase[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return newUrlDatabase;
-};
-
-const generateRandomString = () => {
-  let sixRanLetters = "";
-  const letters = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSdTtUuVvWwXxYyZz";
-  const letterNum = letters.length;
-
-  for (let i = 0; i < 6; i++) {
-    sixRanLetters += letters.charAt(Math.floor(Math.random() * letterNum));
-  }
-  return sixRanLetters;
 };
 
 /////////////////////////////////////////////When you goto url_new
@@ -79,7 +57,7 @@ app.get("/urls", (req, res) => {
   }
 
   if (user) {
-    let userData = searchDataBaseByUser(user.id);
+    const userData = searchDataBaseByUser(user.id, urlDatabase);
     const templateVars = { urls: userData, email: user.email };
     res.render("urls_index", templateVars);
   } else {
@@ -91,8 +69,11 @@ app.get("/urls", (req, res) => {
 ////////////////////////////////////////////When you goto SHOW URLS
 app.get("/urls/:shortURL", (req, res) => {
   const user = users[req.session["user_id"]];
+
   if (!user) {
-    return res.redirect("/login");
+    return res.status(400).json("You must be logged in");
+  }else if(user.id !== urlDatabase[req.params.shortURL].userID){
+    return res.status(400).json("You do not have permision to access that URL");
   } else if (!urlDatabase[req.params.shortURL]) {
     return res.status(400).json("URL doesnt exist");
   } else {
@@ -107,14 +88,12 @@ app.get("/urls/:shortURL", (req, res) => {
 
 ////////////////////////////////////Redirects you to acutal website
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL = urlDatabase[req.params.shortURL];
-
-  if (!shortURL) {
-    return res.status(400).json("URL doesnt exist");
+  if (!urlDatabase[req.params.shortURL]) {
+   res.status(400).send("URL doesnt exist");
+  } else {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(`https://${longURL}`);
   }
-
-  const longURL = urlDatabase[req.params.shortURL]["longURL"];
-  return res.redirect(`${longURL}`);
 });
 
 ///////////////////////////////////////////////////Render login.ejs template
@@ -145,12 +124,14 @@ app.get("/register", (req, res) => {
 app.post("/urls", (req, res) => {
  
   const user = req.session["user_id"];
+ 
+  
   if (!user) {
     return res.status(400).json("Must be logged in to post URLS");
   }
 
-  let longURL = "http://" + req.body.longURL;
-  let shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
 
   urlDatabase[shortURL] = { longURL: longURL, userID: user };
   return res.redirect("/urls/" + shortURL);
